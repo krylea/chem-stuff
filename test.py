@@ -13,6 +13,8 @@ from tqdm import tqdm
 import torch
 import os
 
+from ocdata.vasp import xml_to_traj
+
 import argparse
 
 parser = argparse.ArgumentParser()
@@ -35,8 +37,8 @@ db = lmdb.open(
     map_async=True,
 )
 
-def read_trajectory_extract_features(a2g, traj_path):
-    traj = ase.io.read(traj_path, ":")
+def read_trajectory_extract_features(a2g, traj_path, xml=False):
+    traj = xml_to_traj(traj_path) if xml else ase.io.read(traj_path, ":")
     tags = traj[0].get_tags()
     images = [traj[0], traj[-1]]
     data_objects = a2g.convert_all(images, disable_tqdm=True)
