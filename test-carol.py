@@ -56,30 +56,31 @@ for run_folder in args.run_folders:
     for runname in subfolders:
             # Extract Data object
         filename = os.path.join(run_folder, runname, "OUTCAR")
-        data_objects = read_trajectory_extract_features(a2g, filename)
-        initial_struc = data_objects[0]
-        relaxed_struc = data_objects[1]
-        
-        initial_struc.y_init = initial_struc.y - surface_energy # subtract off reference energy, if applicable
-        del initial_struc.y
-        initial_struc.y_relaxed = relaxed_struc.y - surface_energy # subtract off reference energy, if applicable
-        initial_struc.pos_relaxed = relaxed_struc.pos
-        
-        # Filter data if necessary
-        # OCP filters adsorption energies > |10| eV
-        
-        initial_struc.sid = idx  # arbitrary unique identifier 
-        
-        # no neighbor edge case check
-        if initial_struc.edge_index.shape[1] == 0:
-            print("no neighbors", filename)
-            continue
-        
-        # Write to LMDB
-        txn = db.begin(write=True)
-        txn.put(f"{idx}".encode("ascii"), pickle.dumps(initial_struc, protocol=-1))
-        txn.commit()
-        db.sync()
-        idx += 1
+        if os.path.exists(filename):
+            data_objects = read_trajectory_extract_features(a2g, filename)
+            initial_struc = data_objects[0]
+            relaxed_struc = data_objects[1]
+            
+            initial_struc.y_init = initial_struc.y - surface_energy # subtract off reference energy, if applicable
+            del initial_struc.y
+            initial_struc.y_relaxed = relaxed_struc.y - surface_energy # subtract off reference energy, if applicable
+            initial_struc.pos_relaxed = relaxed_struc.pos
+            
+            # Filter data if necessary
+            # OCP filters adsorption energies > |10| eV
+            
+            initial_struc.sid = idx  # arbitrary unique identifier 
+            
+            # no neighbor edge case check
+            if initial_struc.edge_index.shape[1] == 0:
+                print("no neighbors", filename)
+                continue
+            
+            # Write to LMDB
+            txn = db.begin(write=True)
+            txn.put(f"{idx}".encode("ascii"), pickle.dumps(initial_struc, protocol=-1))
+            txn.commit()
+            db.sync()
+            idx += 1
 
 db.close()
