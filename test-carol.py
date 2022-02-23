@@ -51,7 +51,7 @@ def read_trajectory_extract_features(a2g, traj_path, xml=False):
     return data_objects
 
 idx=0
-for root_dir in args.rootdirs:
+for root_dir in args.run_folders:
     for facet_dir in get_dirs(root_dir):
         for surface_dir in get_dirs(facet_dir):
             assert os.path.exists(os.path.join(surface_dir, "surface"))
