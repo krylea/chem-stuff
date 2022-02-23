@@ -68,6 +68,9 @@ for run_folder in args.run_folders:
             
             # Filter data if necessary
             # OCP filters adsorption energies > |10| eV
+            if initial_struc.y_relaxed > 5:
+                print("energy too large")
+                continue
             
             initial_struc.sid = idx  # arbitrary unique identifier 
             
