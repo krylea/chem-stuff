@@ -54,15 +54,20 @@ idx=0
 for root_dir in args.run_folders:
     for facet_dir in get_dirs(root_dir):
         for surface_dir in get_dirs(facet_dir):
+            print(surface_dir)
             assert os.path.exists(os.path.join(surface_dir, "surface"))
             subfolders = [ f.name for f in os.scandir(surface_dir) if f.is_dir() if f.name != "surface"]
 
-            data_objects = read_trajectory_extract_features(a2g, os.path.join(surface_dir, "surface", "OUTCAR"))
+            try:
+                data_objects = read_trajectory_extract_features(a2g, os.path.join(surface_dir, "surface", "OUTCAR"))
+            except:
+                print()
             surface_energy = data_objects[1].y_relaxed
             for runname in subfolders:
                     # Extract Data object
                 filename = os.path.join(surface_dir, runname, "OUTCAR")
                 if os.path.exists(filename):
+                    print(runname)
                     data_objects = read_trajectory_extract_features(a2g, filename)
                     initial_struc = data_objects[0]
                     relaxed_struc = data_objects[1]
