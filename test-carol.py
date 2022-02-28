@@ -62,7 +62,7 @@ for root_dir in args.run_folders:
                 data_objects = read_trajectory_extract_features(a2g, os.path.join(surface_dir, "surface", "OUTCAR"))
             except:
                 import pdb;pdb.set_trace()
-            surface_energy = data_objects[1].y_relaxed
+            surface_energy = data_objects[1].y
             for runname in subfolders:
                     # Extract Data object
                 filename = os.path.join(surface_dir, runname, "OUTCAR")
