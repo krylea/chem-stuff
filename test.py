@@ -13,7 +13,7 @@ from tqdm import tqdm
 import torch
 import os
 
-from ocdata.vasp import xml_to_traj
+#from ocdata.vasp import xml_to_traj
 
 import argparse
 
