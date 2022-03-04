@@ -85,7 +85,7 @@ for root_dir in args.run_folders:
                     ads_indices = indices_by_height[:NUM_ADS_ATOMS]
 
                     surface_indices1 = indices_by_height[NUM_ADS_ATOMS:NUM_ADS_ATOMS+NUM_SURFACE_ATOMS]
-                    surface_indices2 = [i for i in indices if (torch.eq(initial_struc.pos[i], initial_struc.pos_relaxed[i]).all().item() and i not in ads_indices)]
+                    surface_indices2 = [i for i in indices if (not torch.eq(initial_struc.pos[i], initial_struc.pos_relaxed[i]).all().item() and i not in ads_indices)]
                     if set(surface_indices1) != set(surface_indices2):
                         print("Ambiguous surface at", filename)
                         continue
