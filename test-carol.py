@@ -71,7 +71,11 @@ for root_dir in args.run_folders:
                 filename = os.path.join(surface_dir, runname, "OUTCAR")
                 if os.path.exists(filename):
                     print(runname)
-                    data_objects = read_trajectory_extract_features(a2g, filename)
+                    try:
+                        data_objects = read_trajectory_extract_features(a2g, filename)
+                    except Exception as e:
+                        print(e)
+                        continue
                     initial_struc = data_objects[0]
                     relaxed_struc = data_objects[1]
                     
