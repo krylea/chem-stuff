@@ -17,6 +17,9 @@ import os
 
 import argparse
 
+NUM_ADS_ATOMS=1
+NUM_SURFACE_ATOMS=24
+
 def get_dirs(basedir):
     subfolders = [f.path for f in os.scandir(basedir) if f.is_dir()]
     return subfolders
@@ -76,18 +79,32 @@ for root_dir in args.run_folders:
                     del initial_struc.y
                     initial_struc.y_relaxed = relaxed_struc.y - surface_energy # subtract off reference energy, if applicable
                     initial_struc.pos_relaxed = relaxed_struc.pos
+
+                    indices = list(range(initial_struc.pos.size(0)))
+                    indices_by_height = sorted(indices, key=lambda i:initial_struc.pos[i,2], reverse=True)
+                    ads_indices = indices_by_height[:NUM_ADS_ATOMS]
+
+                    surface_indices1 = indices_by_height[NUM_ADS_ATOMS:NUM_ADS_ATOMS+NUM_SURFACE_ATOMS]
+                    surface_indices2 = [i for i in indices if (torch.eq(initial_struc.y[i], initial_struc.y_relaxed[i]).all().item() and i not in ads_indices)]
+                    if set(surface_indices1) != set(surface_indices2):
+                        print("Ambiguous surface at", filename)
+                        continue
+
+                    initial_struc.tags[ads_indices] = 2
+                    initial_struc.tags[surface_indices1] = 1
+
                     
                     # Filter data if necessary
                     # OCP filters adsorption energies > |10| eV
                     if initial_struc.y_relaxed > 5:
-                        print("energy too large")
+                        print("energy too large at", filename)
                         continue
                     
                     initial_struc.sid = idx  # arbitrary unique identifier 
                     
                     # no neighbor edge case check
                     if initial_struc.edge_index.shape[1] == 0:
-                        print("no neighbors", filename)
+                        print("no neighbors at", filename)
                         continue
                     
                     # Write to LMDB
