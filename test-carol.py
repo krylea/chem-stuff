@@ -40,7 +40,7 @@ a2g = AtomsToGraphs(
     r_fixed=True,
 )
 db = lmdb.open(
-    "chem-data.lmdb",
+    "data.lmdb",
     map_size=1099511627776 * 2,
     subdir=False,
     meminit=False,
