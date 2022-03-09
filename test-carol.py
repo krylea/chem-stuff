@@ -12,6 +12,7 @@ import pickle
 from tqdm import tqdm
 import torch
 import os
+import math
 
 #from ocdata.vasp import xml_to_traj
 
@@ -19,6 +20,8 @@ import argparse
 
 NUM_ADS_ATOMS=1
 NUM_SURFACE_ATOMS=24
+
+ADS_ENERGY=-3.38
 
 def get_dirs(basedir):
     subfolders = [f.path for f in os.scandir(basedir) if f.is_dir()]
@@ -79,9 +82,9 @@ for root_dir in args.run_folders:
                     initial_struc = data_objects[0]
                     relaxed_struc = data_objects[1]
                     
-                    initial_struc.y_init = initial_struc.y - surface_energy # subtract off reference energy, if applicable
+                    initial_struc.y_init = initial_struc.y - surface_energy - ADS_ENERGY # subtract off reference energy, if applicable
                     del initial_struc.y
-                    initial_struc.y_relaxed = relaxed_struc.y - surface_energy # subtract off reference energy, if applicable
+                    initial_struc.y_relaxed = relaxed_struc.y - surface_energy - ADS_ENERGY # subtract off reference energy, if applicable
                     initial_struc.pos_relaxed = relaxed_struc.pos
 
                     indices = list(range(initial_struc.pos.size(0)))
@@ -100,7 +103,7 @@ for root_dir in args.run_folders:
                     
                     # Filter data if necessary
                     # OCP filters adsorption energies > |10| eV
-                    if initial_struc.y_relaxed > 5:
+                    if math.abs(initial_struc.y_relaxed) > 5:
                         print("energy too large at", filename)
                         continue
                     
