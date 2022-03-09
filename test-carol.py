@@ -12,7 +12,6 @@ import pickle
 from tqdm import tqdm
 import torch
 import os
-import math
 
 #from ocdata.vasp import xml_to_traj
 
@@ -103,7 +102,7 @@ for root_dir in args.run_folders:
                     
                     # Filter data if necessary
                     # OCP filters adsorption energies > |10| eV
-                    if math.abs(initial_struc.y_relaxed) > 5:
+                    if abs(initial_struc.y_relaxed) > 5:
                         print("energy too large at", filename)
                         continue
                     
