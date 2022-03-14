@@ -7,12 +7,12 @@ from ocpmodels.datasets import SinglePointLmdbDataset, TrajectoryLmdbDataset
 
 parser = argparse.ArgumentParser()
 parser.add_argument("folder", type=str)
-parser.add_argument("val_frac", type=float, default=0.15)
-parser.add_argument("test_frac", type=float, default=0.15)
+parser.add_argument("--val_frac", type=float, default=0.15)
+parser.add_argument("--test_frac", type=float, default=0.15)
 args = parser.parse_args()
 
 datapath = os.path.join(args.folder, "data.lmdb")
-dataset = SinglePointLmdbDataset({"src":args.datafile})
+dataset = SinglePointLmdbDataset({"src":datapath})
 N = len(dataset)
 N_val, N_test = int(args.val_frac * N), int(args.test_frac * N)
 N_train = N - N_val - N_test
