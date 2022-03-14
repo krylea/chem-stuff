@@ -17,7 +17,7 @@ N = len(dataset)
 N_val, N_test = int(args.val_frac * N), int(args.test_frac * N)
 N_train = N - N_val - N_test
 
-indices = random.shuffle(list(range(N)))
+indices = random.sample(list(range(N)), k=N)
 train_data = [dataset[i] for i in indices[:N_train]]
 val_data = [dataset[i] for i in indices[N_train:N_train+N_val]]
 test_data = [dataset[i] for i in indices[N_train+N_val:]]
