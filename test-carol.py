@@ -28,8 +28,6 @@ def get_dirs(basedir):
 
 parser = argparse.ArgumentParser()
 parser.add_argument("run_folders", type=str, nargs='+')
-parser.add_argument("val_frac", type=float, default=0.15)
-parser.add_argument("test_frac", type=float, default=0.15)
 args = parser.parse_args()
 
 a2g = AtomsToGraphs(
