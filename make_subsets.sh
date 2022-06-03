@@ -4,6 +4,7 @@
 #SBATCH --open-mode=append
 #SBATCH --ntasks=1
 #SBATCH --partition=cpu
+#SBATCH --qos=nopreemption
 #SBATCH -c 2
 #SBATCH --mem=50GB
 
