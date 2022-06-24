@@ -85,3 +85,30 @@ if __name__ == '__main__':
     write_db(os.path.join(outdir, "train"), remainder)
     for element in element_list:
         write_db(os.path.join(outdir, str(element)), sets_by_element[element])
+
+
+def element_frequencies(db, maxlen=-1):
+    element_freqs={x:0 for x in range(100)}
+    n_ex = min(maxlen, len(db)) if maxlen > 0 else len(db)
+    for i in range(n_ex):
+        ex = db[i]
+        ex_elements = ex["atomic_numbers"].long().unique()
+        for element in element_freqs.keys():
+            if element in ex_elements:
+                element_freqs[element] += 1
+    return element_freqs
+
+import math
+def pretty_print3(freqs, ncol=1):
+    filtered_freqs = {k:v for k,v in freqs.items() if v > 0}
+    sorted_freqs = sorted(filtered_freqs.items(), key=lambda x: x[1], reverse=True)
+    n = math.ceil(len(sorted_freqs)/ncol)
+    for i in range(n):
+        printstr=""
+        for j in range(ncol):
+            index = i + n*j
+            if index < len(sorted_freqs):
+                ele, freq = sorted_freqs[index]
+                printstr += ("%d: \t%f\t\t\t" % (ele, freq))
+        print(printstr)
+
