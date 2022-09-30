@@ -41,6 +41,9 @@ def write_db(outdir, examples):
         idx += 1
     db.close()
 
-write_db(os.path.join(args.folder, "train"), train_data)
-write_db(os.path.join(args.folder, "val"), val_data)
-write_db(os.path.join(args.folder, "test"), test_data)
+if len(train_data) > 0:
+    write_db(os.path.join(args.folder, "train"), train_data)
+if len(val_data) > 0:
+    write_db(os.path.join(args.folder, "val"), val_data)
+if len(test_data) > 0:
+    write_db(os.path.join(args.folder, "test"), test_data)

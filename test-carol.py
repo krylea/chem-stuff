@@ -20,7 +20,7 @@ import argparse
 NUM_ADS_ATOMS=1
 NUM_SURFACE_ATOMS=24
 
-ADS_ENERGY=-3.38
+ADS_ENERGY=-3.477
 
 def get_dirs(basedir):
     subfolders = [f.path for f in os.scandir(basedir) if f.is_dir()]
