@@ -63,7 +63,7 @@ def read_trajectory_extract_features(a2g, traj_path, xml=False):
     data_objects[1].tags = torch.LongTensor(tags)
     return data_objects
 
-
+data = {}
 
 def process_surface(surface_dir, idx):
     print(surface_dir)
@@ -128,11 +128,12 @@ def process_surface(surface_dir, idx):
                 print("no neighbors at", filename)
                 continue
             
+            data[idx] = initial_struc
             # Write to LMDB
-            txn = db.begin(write=True)
-            txn.put(f"{idx}".encode("ascii"), pickle.dumps(initial_struc, protocol=-1))
-            txn.commit()
-            db.sync()
+            #txn = db.begin(write=True)
+            #txn.put(f"{idx}".encode("ascii"), pickle.dumps(initial_struc, protocol=-1))
+            #txn.commit()
+            #db.sync()
             idx += 1
 
     return idx
