@@ -108,7 +108,7 @@ def process_surface(surface_dir):
             initial_struc.tags[ads_indices] = 2
             initial_struc.tags[surface_indices] = 1
 
-            ads_energy = sum([ADS_ENERGIES[initial_struc.atomic_numbers[i]] for i in ads_indices])
+            ads_energy = sum([ADS_ENERGIES[initial_struc.atomic_numbers[i].item()] for i in ads_indices])
             initial_struc.y_init = initial_struc.y - surface_energy - ads_energy # subtract off reference energy, if applicable
             del initial_struc.y
             initial_struc.y_relaxed = relaxed_struc.y - surface_energy - ads_energy # subtract off reference energy, if applicable
