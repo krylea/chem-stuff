@@ -145,10 +145,10 @@ for root_dir in args.run_folders:
     if old_format:
         for facet_dir in get_dirs(root_dir):
             for surface_dir in get_dirs(facet_dir):
-                idx = process_surface(surface_dir)
+                idx = process_surface(surface_dir, idx)
     else:
         for surface_dir in get_dirs(root_dir):
-            idx = process_surface(surface_dir)
+            idx = process_surface(surface_dir, idx)
 
 
 db.close()
