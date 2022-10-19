@@ -88,6 +88,8 @@ def process_surface(surface_dir):
             initial_struc = data_objects[0]
             relaxed_struc = data_objects[1]
 
+            initial_struc.pos_relaxed = relaxed_struc.pos
+
             indices = list(range(initial_struc.pos.size(0)))
             ads_indices = [i for i in indices if initial_struc.pos[i,2] > Z_ADS_THRESHOLD]
             #indices_by_height = sorted(indices, key=lambda i:initial_struc.pos[i,2], reverse=True)
@@ -110,7 +112,7 @@ def process_surface(surface_dir):
             initial_struc.y_init = initial_struc.y - surface_energy - ads_energy # subtract off reference energy, if applicable
             del initial_struc.y
             initial_struc.y_relaxed = relaxed_struc.y - surface_energy - ads_energy # subtract off reference energy, if applicable
-            initial_struc.pos_relaxed = relaxed_struc.pos
+            
 
             
             # Filter data if necessary
