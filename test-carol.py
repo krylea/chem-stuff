@@ -20,6 +20,8 @@ import argparse
 NUM_ADS_ATOMS=1
 NUM_SURFACE_ATOMS=24
 
+NUM_ELEMENTS=100
+
 Z_ADS_THRESHOLD = 9.0
 
 ADS_ENERGIES={
@@ -63,7 +65,19 @@ def read_trajectory_extract_features(a2g, traj_path, xml=False):
     data_objects[1].tags = torch.LongTensor(tags)
     return data_objects
 
-data = {}
+
+def get_adsorbates(total_system, surface):
+    surface_elements = surface.atomic_numbers.int().bincount(minlength=NUM_ELEMENTS)
+    system_elements = total_system.atomic_numbers.int().bincount(minlength=NUM_ELEMENTS)
+    ads_elements = system_elements - surface_elements
+    indices = torch.arange(total_system.atomic_numbers.size(0))
+    ads_indices=[]
+    for element in ads_elements.nonzero():
+        element_indices = indices[total_system.atomic_numbers==element.item()]
+        sorted_indices = sorted(element_indices.tolist(), key=lambda i:total_system.pos[i,2].item(), reverse=True)
+        ads_indices += sorted_indices[:ads_elements[element]]
+    return ads_indices
+
 
 def process_surface(surface_dir, idx):
     print(surface_dir)
@@ -75,6 +89,7 @@ def process_surface(surface_dir, idx):
     except:
         print("Failed to read surface at", surface_dir)
         return idx
+    surface = data_objects[1]
     surface_energy = data_objects[1].y
     for runname in subfolders:
             # Extract Data object
@@ -92,7 +107,7 @@ def process_surface(surface_dir, idx):
             initial_struc.pos_relaxed = relaxed_struc.pos
 
             indices = list(range(initial_struc.pos.size(0)))
-            ads_indices = [i for i in indices if initial_struc.pos[i,2] > Z_ADS_THRESHOLD]
+            ads_indices = get_adsorbates(initial_struc, surface)
             #indices_by_height = sorted(indices, key=lambda i:initial_struc.pos[i,2], reverse=True)
             #ads_indices = indices_by_height[:NUM_ADS_ATOMS]
 
@@ -109,7 +124,7 @@ def process_surface(surface_dir, idx):
             initial_struc.tags[ads_indices] = 2
             initial_struc.tags[surface_indices] = 1
 
-            ads_energy = sum([ADS_ENERGIES[initial_struc.atomic_numbers[i].item()] for i in ads_indices])
+            ads_energy = sum([ADS_ENERGIES[initial_struc.atomic_numbers[i].int().item()] for i in ads_indices])
             initial_struc.y_init = initial_struc.y - surface_energy - ads_energy # subtract off reference energy, if applicable
             del initial_struc.y
             initial_struc.y_relaxed = relaxed_struc.y - surface_energy - ads_energy # subtract off reference energy, if applicable
@@ -129,12 +144,11 @@ def process_surface(surface_dir, idx):
                 print("no neighbors at", filename)
                 continue
             
-            data[idx] = initial_struc
             # Write to LMDB
-            #txn = db.begin(write=True)
-            #txn.put(f"{idx}".encode("ascii"), pickle.dumps(initial_struc, protocol=-1))
-            #txn.commit()
-            #db.sync()
+            txn = db.begin(write=True)
+            txn.put(f"{idx}".encode("ascii"), pickle.dumps(initial_struc, protocol=-1))
+            txn.commit()
+            db.sync()
             idx += 1
 
     return idx
