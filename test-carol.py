@@ -73,7 +73,8 @@ def process_surface(surface_dir, idx):
     try:
         data_objects = read_trajectory_extract_features(a2g, os.path.join(surface_dir, "surface", "OUTCAR"))
     except:
-        import pdb;pdb.set_trace()
+        print("Failed to read surface at", surface_dir)
+        return idx
     surface_energy = data_objects[1].y
     for runname in subfolders:
             # Extract Data object
