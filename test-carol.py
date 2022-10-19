@@ -65,7 +65,7 @@ def read_trajectory_extract_features(a2g, traj_path, xml=False):
 
 
 
-def process_surface(surface_dir):
+def process_surface(surface_dir, idx):
     print(surface_dir)
     assert os.path.exists(os.path.join(surface_dir, "surface"))
     subfolders = [ f.name for f in os.scandir(surface_dir) if f.is_dir() if f.name != "surface"]
@@ -135,6 +135,8 @@ def process_surface(surface_dir):
             db.sync()
             idx += 1
 
+    return idx
+
 
 old_format=True
 
@@ -143,10 +145,10 @@ for root_dir in args.run_folders:
     if old_format:
         for facet_dir in get_dirs(root_dir):
             for surface_dir in get_dirs(facet_dir):
-                process_surface(surface_dir)
+                idx = process_surface(surface_dir)
     else:
         for surface_dir in get_dirs(root_dir):
-            process_surface(surface_dir)
+            idx = process_surface(surface_dir)
 
 
 db.close()
