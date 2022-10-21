@@ -37,7 +37,7 @@ def get_dirs(basedir):
 
 parser = argparse.ArgumentParser()
 parser.add_argument("run_folders", type=str, nargs='+')
-parser.add_argument("ev_bounds", type=float, nargs=2)
+parser.add_argument("--ev_bounds", type=float, nargs=2)
 
 args = parser.parse_args()
 
