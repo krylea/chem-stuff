@@ -133,9 +133,9 @@ def process_surface(surface_dir, idx):
             
             # Filter data if necessary
             # OCP filters adsorption energies > |10| eV
-            #if initial_struc.y_relaxed > 0 or initial_struc.y_relaxed < -8:
-            #    print("energy out of bounds at", filename)
-            #    continue
+            if initial_struc.y_relaxed > 0 or initial_struc.y_relaxed < -8:
+                print("energy out of bounds at", filename)
+                continue
             
             initial_struc.sid = idx  # arbitrary unique identifier 
             
