@@ -37,6 +37,7 @@ def get_dirs(basedir):
 
 parser = argparse.ArgumentParser()
 parser.add_argument("run_folders", type=str, nargs='+')
+parser.add_argument("ev_bounds", type=str, nargs='2')
 
 args = parser.parse_args()
 
@@ -79,7 +80,7 @@ def get_adsorbates(total_system, surface):
     return ads_indices
 
 
-def process_surface(surface_dir, idx):
+def process_surface(surface_dir, idx, ev_bounds=(-5,0)):
     print(surface_dir)
     assert os.path.exists(os.path.join(surface_dir, "surface"))
     subfolders = [ f.name for f in os.scandir(surface_dir) if f.is_dir() if f.name != "surface"]
@@ -133,7 +134,7 @@ def process_surface(surface_dir, idx):
             
             # Filter data if necessary
             # OCP filters adsorption energies > |10| eV
-            if initial_struc.y_relaxed > 0 or initial_struc.y_relaxed < -8:
+            if initial_struc.y_relaxed < ev_bounds[0] or initial_struc.y_relaxed > ev_bounds[1]:
                 print("energy out of bounds at", filename)
                 continue
             
@@ -161,10 +162,10 @@ for root_dir in args.run_folders:
     if old_format:
         for facet_dir in get_dirs(root_dir):
             for surface_dir in get_dirs(facet_dir):
-                idx = process_surface(surface_dir, idx)
+                idx = process_surface(surface_dir, idx, ev_bounds=args.ev_bounds)
     else:
         for surface_dir in get_dirs(root_dir):
-            idx = process_surface(surface_dir, idx)
+            idx = process_surface(surface_dir, idx, ev_bounds=args.ev_bounds)
 
 db.close()
 
