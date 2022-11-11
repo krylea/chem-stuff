@@ -122,24 +122,6 @@ class LmdbDataset(Dataset):
         else:
             self.env.close()
 
-
-parser = argparse.ArgumentParser()
-parser.add_argument("folder", type=str)
-parser.add_argument("--val_frac", type=float, default=0.15)
-parser.add_argument("--test_frac", type=float, default=0.15)
-args = parser.parse_args()
-
-datapath = os.path.join(args.folder, "data.lmdb")
-dataset = LmdbDataset({"src":datapath})
-N = len(dataset)
-N_val, N_test = int(args.val_frac * N), int(args.test_frac * N)
-N_train = N - N_val - N_test
-
-indices = random.sample(list(range(N)), k=N)
-train_data = [dataset[i] for i in indices[:N_train]]
-val_data = [dataset[i] for i in indices[N_train:N_train+N_val]]
-test_data = [dataset[i] for i in indices[N_train+N_val:]]
-
 def write_db(outdir, examples):
     if not os.path.exists(outdir):
         os.makedirs(outdir)
@@ -159,9 +141,29 @@ def write_db(outdir, examples):
         idx += 1
     db.close()
 
-if len(train_data) > 0:
-    write_db(os.path.join(args.folder, "train"), train_data)
-if len(val_data) > 0:
-    write_db(os.path.join(args.folder, "val"), val_data)
-if len(test_data) > 0:
-    write_db(os.path.join(args.folder, "test"), test_data)
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("folder", type=str)
+    parser.add_argument("--val_frac", type=float, default=0.15)
+    parser.add_argument("--test_frac", type=float, default=0.15)
+    args = parser.parse_args()
+
+    datapath = os.path.join(args.folder, "data.lmdb")
+    dataset = LmdbDataset({"src":datapath})
+    N = len(dataset)
+    N_val, N_test = int(args.val_frac * N), int(args.test_frac * N)
+    N_train = N - N_val - N_test
+
+    indices = random.sample(list(range(N)), k=N)
+    train_data = [dataset[i] for i in indices[:N_train]]
+    val_data = [dataset[i] for i in indices[N_train:N_train+N_val]]
+    test_data = [dataset[i] for i in indices[N_train+N_val:]]
+
+
+
+    if len(train_data) > 0:
+        write_db(os.path.join(args.folder, "train"), train_data)
+    if len(val_data) > 0:
+        write_db(os.path.join(args.folder, "val"), val_data)
+    if len(test_data) > 0:
+        write_db(os.path.join(args.folder, "test"), test_data)
