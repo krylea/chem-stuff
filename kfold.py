@@ -141,47 +141,30 @@ def write_db(outdir, examples):
         idx += 1
     db.close()
 
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("folder", type=str)
-    parser.add_argument("--val_frac", type=float, default=0.15)
-    parser.add_argument("--test_frac", type=float, default=0.15)
+    parser.add_argument("--k", type=float, default=8)
     args = parser.parse_args()
 
     datapath = os.path.join(args.folder, "data.lmdb")
     dataset = LmdbDataset({"src":datapath})
     N = len(dataset)
-    N_val, N_test = int(args.val_frac * N), int(args.test_frac * N)
-    N_train = N - N_val - N_test
+    N_fold = N // args.k
+
+    kfold_dir = os.path.join(args.folder, "kfold")
+    if not os.path.exists(kfold_dir):
+        os.makedirs(kfold_dir)
 
     indices = random.sample(list(range(N)), k=N)
-    train_data = [dataset[i] for i in indices[:N_train]]
-    val_data = [dataset[i] for i in indices[N_train:N_train+N_val]]
-    test_data = [dataset[i] for i in indices[N_train+N_val:]]
+    folds = [[dataset[i] for i in indices[N_fold*i:N_fold*(i+1)]] for i in range(args.k)]
 
-
-
-    if len(train_data) > 0:
-        write_db(os.path.join(args.folder, "train"), train_data)
-    if len(val_data) > 0:
-        write_db(os.path.join(args.folder, "val"), val_data)
-    if len(test_data) > 0:
-        write_db(os.path.join(args.folder, "test"), test_data)
-
-
-
-
-def get_data_size(path):
-    dataset = splitdata.LmdbDataset({"src":os.path.join(path, "data.lmdb")})
-    n = len(dataset)
-    dataset.close_db()
-    return n
-
-for dir in os.listdir('./'):
-    try:
-        for split in ["train", "val", "test"]:
-            dirpath = os.path.join(dir, split)
-            n = get_data_size(dirpath)
-            print(dirpath + ": " + str(n))
-    except:
-        continue
+    for i, fold in enumerate(folds):
+        train_folds = folds[:i] + folds[i+1:]
+        train_data = [x for fold in train_folds for x in fold]
+        val_data = fold
+        fold_dir = os.path.join(kfold_dir, str(i))
+        write_db(os.path.join(fold_dir, "train"), train_data)
+        write_db(os.path.join(fold_dir, "val"), val_data)
