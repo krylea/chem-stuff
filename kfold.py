@@ -146,7 +146,7 @@ def write_db(outdir, examples):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("folder", type=str)
-    parser.add_argument("--k", type=float, default=8)
+    parser.add_argument("--k", type=int, default=8)
     args = parser.parse_args()
 
     datapath = os.path.join(args.folder, "data.lmdb")
