@@ -163,7 +163,7 @@ if __name__ == '__main__':
 
     for i, fold in enumerate(folds):
         train_folds = folds[:i] + folds[i+1:]
-        train_data = [x for fold in train_folds for x in fold]
+        train_data = [x for fold_i in train_folds for x in fold_i]
         val_data = fold
         fold_dir = os.path.join(kfold_dir, str(i))
         write_db(os.path.join(fold_dir, "train"), train_data)
