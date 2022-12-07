@@ -181,4 +181,4 @@ if __name__ == '__main__':
         fold_dir = os.path.join(kfold_dir, str(i))
         write_db(os.path.join(fold_dir, "train"), train_data)
         write_db(os.path.join(fold_dir, "val"), val_data)
-        write_db(os.path.join(fold_dir, "val"), test_data)
+        write_db(os.path.join(fold_dir, "test"), test_data)

@@ -17,7 +17,6 @@ import os
 
 import argparse
 
-from adsorbate import Adsorbate
 
 
 NUM_ADS_ATOMS=1
@@ -134,7 +133,6 @@ def process_surface(surface_dir, idx, ev_bounds=(-5,0)):
             del initial_struc.y
             initial_struc.y_relaxed = relaxed_struc.y - surface_energy - ads_energy # subtract off reference energy, if applicable
             
-            initial_struc.ads_label = Adsorbate(initial_struc.atomic_numbers[ads_indices])
 
             
             # Filter data if necessary
