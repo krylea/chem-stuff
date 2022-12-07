@@ -17,6 +17,9 @@ import os
 
 import argparse
 
+from adsorbate import Adsorbate
+
+
 NUM_ADS_ATOMS=1
 NUM_SURFACE_ATOMS=24
 
@@ -67,7 +70,7 @@ def read_trajectory_extract_features(a2g, traj_path, xml=False):
     return data_objects
 
 
-def get_adsorbates(total_system, surface):
+def get_adsorbate_indices(total_system, surface):
     surface_elements = surface.atomic_numbers.int().bincount(minlength=NUM_ELEMENTS)
     system_elements = total_system.atomic_numbers.int().bincount(minlength=NUM_ELEMENTS)
     ads_elements = system_elements - surface_elements
@@ -78,6 +81,7 @@ def get_adsorbates(total_system, surface):
         sorted_indices = sorted(element_indices.tolist(), key=lambda i:total_system.pos[i,2].item(), reverse=True)
         ads_indices += sorted_indices[:ads_elements[element]]
     return ads_indices
+
 
 
 def process_surface(surface_dir, idx, ev_bounds=(-5,0)):
@@ -108,7 +112,7 @@ def process_surface(surface_dir, idx, ev_bounds=(-5,0)):
             initial_struc.pos_relaxed = relaxed_struc.pos
 
             indices = list(range(initial_struc.pos.size(0)))
-            ads_indices = get_adsorbates(initial_struc, surface)
+            ads_indices = get_adsorbate_indices(initial_struc, surface)
             #indices_by_height = sorted(indices, key=lambda i:initial_struc.pos[i,2], reverse=True)
             #ads_indices = indices_by_height[:NUM_ADS_ATOMS]
 
@@ -130,6 +134,7 @@ def process_surface(surface_dir, idx, ev_bounds=(-5,0)):
             del initial_struc.y
             initial_struc.y_relaxed = relaxed_struc.y - surface_energy - ads_energy # subtract off reference energy, if applicable
             
+            initial_struc.ads_label = Adsorbate(initial_struc.atomic_numbers[ads_indices])
 
             
             # Filter data if necessary

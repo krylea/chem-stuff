@@ -142,11 +142,22 @@ def write_db(outdir, examples):
     db.close()
 
 
+def val_split(dataset, val_frac):
+    N = len(dataset)
+    N_val = int(val_frac * N)
+    N_train = N - N_val
+    indices = random.sample(list(range(N)), k=N)
+    train_data = [dataset[i] for i in indices[:N_train]]
+    val_data = [dataset[i] for i in indices[N_train:]]
+    return train_data, val_data
+    
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("folder", type=str)
     parser.add_argument("--k", type=int, default=8)
+    parser.add_argument("--val_frac", type=float, default=0.15)
     args = parser.parse_args()
 
     datapath = os.path.join(args.folder, "data.lmdb")
@@ -163,8 +174,11 @@ if __name__ == '__main__':
 
     for i, fold in enumerate(folds):
         train_folds = folds[:i] + folds[i+1:]
-        train_data = [x for fold_i in train_folds for x in fold_i]
-        val_data = fold
+        base_train_data = [x for fold_i in train_folds for x in fold_i]
+        train_data, val_data = val_split(base_train_data, val_frac=args.val_frac)
+        test_data = fold
+        
         fold_dir = os.path.join(kfold_dir, str(i))
         write_db(os.path.join(fold_dir, "train"), train_data)
         write_db(os.path.join(fold_dir, "val"), val_data)
+        write_db(os.path.join(fold_dir, "val"), test_data)
