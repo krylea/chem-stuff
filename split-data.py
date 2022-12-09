@@ -170,7 +170,7 @@ if __name__ == '__main__':
 
 
 
-
+'''
 def get_data_size(path):
     dataset = splitdata.LmdbDataset({"src":os.path.join(path, "data.lmdb")})
     n = len(dataset)
@@ -185,3 +185,4 @@ for dir in os.listdir('./'):
             print(dirpath + ": " + str(n))
     except:
         continue
+'''
