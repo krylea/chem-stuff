@@ -143,7 +143,8 @@ def write_db(outdir, examples):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("folder", type=str)
+    parser.add_argument("infolder", type=str)
+    parser.add_argument("--out_folder", type=str, default="")
     parser.add_argument("--val_frac", type=float, default=0.15)
     parser.add_argument("--test_frac", type=float, default=0.15)
     args = parser.parse_args()
@@ -159,14 +160,13 @@ if __name__ == '__main__':
     val_data = [dataset[i] for i in indices[N_train:N_train+N_val]]
     test_data = [dataset[i] for i in indices[N_train+N_val:]]
 
-
-
+    outfolder = args.out_folder if len(args.out_folder) > 0 else args.folder
     if len(train_data) > 0:
-        write_db(os.path.join(args.folder, "train"), train_data)
+        write_db(os.path.join(outfolder, "train"), train_data)
     if len(val_data) > 0:
-        write_db(os.path.join(args.folder, "val"), val_data)
+        write_db(os.path.join(outfolder, "val"), val_data)
     if len(test_data) > 0:
-        write_db(os.path.join(args.folder, "test"), test_data)
+        write_db(os.path.join(outfolder, "test"), test_data)
 
 
 
