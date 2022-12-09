@@ -143,7 +143,7 @@ def write_db(outdir, examples):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("infolder", type=str)
+    parser.add_argument("folder", type=str)
     parser.add_argument("--out_folder", type=str, default="")
     parser.add_argument("--val_frac", type=float, default=0.15)
     parser.add_argument("--test_frac", type=float, default=0.15)
