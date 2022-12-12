@@ -11,6 +11,7 @@ from pathlib import Path
 import lmdb
 import numpy as np
 import torch
+import math
 from torch.utils.data import Dataset
 from torch_geometric.data import Data
 import torch_geometric
@@ -146,6 +147,8 @@ def val_split(dataset, val_frac):
     N = len(dataset)
     N_val = int(val_frac * N)
     N_train = N - N_val
+    if N_val <= 0:
+        return dataset, None
     indices = random.sample(list(range(N)), k=N)
     train_data = [dataset[i] for i in indices[:N_train]]
     val_data = [dataset[i] for i in indices[N_train:]]
@@ -169,8 +172,15 @@ if __name__ == '__main__':
     if not os.path.exists(kfold_dir):
         os.makedirs(kfold_dir)
 
-    indices = random.sample(list(range(N)), k=N)
-    folds = [[dataset[i] for i in indices[N_fold*i:N_fold*(i+1)]] for i in range(args.k)]
+    #indices = random.sample(list(range(N)), k=N)
+    #folds = [[dataset[i] for i in indices[N_fold*i:N_fold*(i+1)]] for i in range(args.k)]
+    folds = []
+    for i in range(args.k):
+        j_min = math.round(N * i / args.k)
+        j_max = math.round(N * (i+1) / args.k)
+        folds.append(dataset[j_min:j_max])
+
+    #folds = [dataset[N_fold*i:N_fold*(i+1)] for i in range(args.k)]
 
     for i, fold in enumerate(folds):
         train_folds = folds[:i] + folds[i+1:]
@@ -180,5 +190,6 @@ if __name__ == '__main__':
         
         fold_dir = os.path.join(kfold_dir, str(i))
         write_db(os.path.join(fold_dir, "train"), train_data)
-        write_db(os.path.join(fold_dir, "val"), val_data)
+        if val_data is not None:
+            write_db(os.path.join(fold_dir, "val"), val_data)
         write_db(os.path.join(fold_dir, "test"), test_data)
