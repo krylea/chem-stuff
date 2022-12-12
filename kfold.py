@@ -176,8 +176,8 @@ if __name__ == '__main__':
     #folds = [[dataset[i] for i in indices[N_fold*i:N_fold*(i+1)]] for i in range(args.k)]
     folds = []
     for i in range(args.k):
-        j_min = math.round(N * i / args.k)
-        j_max = math.round(N * (i+1) / args.k)
+        j_min = round(N * i / args.k)
+        j_max = round(N * (i+1) / args.k)
         folds.append(dataset[j_min:j_max])
 
     #folds = [dataset[N_fold*i:N_fold*(i+1)] for i in range(args.k)]
