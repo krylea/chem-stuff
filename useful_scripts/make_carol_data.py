@@ -1,5 +1,5 @@
-from ocpmodels.preprocessing import AtomsToGraphs
-from ocpmodels.datasets import SinglePointLmdbDataset, TrajectoryLmdbDataset
+from atoms_to_graphs import AtomsToGraphs
+#from ocpmodels.datasets import SinglePointLmdbDataset, TrajectoryLmdbDataset
 import ase.io
 from ase.build import bulk
 from ase.build import fcc100, add_adsorbate, molecule
@@ -59,8 +59,8 @@ db = lmdb.open(
     map_async=True,
 )
 
-def read_trajectory_extract_features(a2g, traj_path, xml=False):
-    traj = xml_to_traj(traj_path) if xml else ase.io.read(traj_path, ":")
+def read_trajectory_extract_features(a2g, traj_path):
+    traj = ase.io.read(traj_path, ":")
     tags = traj[0].get_tags()
     images = [traj[0], traj[-1]]
     data_objects = a2g.convert_all(images, disable_tqdm=True)
